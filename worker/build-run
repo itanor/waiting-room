@@ -1,0 +1,2 @@
+go install github.com/itanor/worker
+$GOPATH/bin/worker
