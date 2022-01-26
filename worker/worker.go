@@ -4,12 +4,29 @@ import (
   "fmt"
   "log"
   "github.com/streadway/amqp"
+  "context"
+  "github.com/go-redis/redis/v8"
 )
+var ctx = context.Background()
 
 func failOnError(err error, msg string) {
   if err != nil {
     log.Fatalf("%s: %s", msg, err)
   }
+}
+
+func read_from_redis() {
+  rdb := redis.NewClient(&redis.Options{
+    Addr:     "localhost:6379",
+    Password: "", // no password set
+    DB:       0,  // use default DB
+  })
+
+  val, err := rdb.Get(ctx, "itanor@gmail.com").Result()
+  if err != nil {
+      panic(err)
+  }
+  fmt.Println("key", val)
 }
 
 func main() {
@@ -43,6 +60,8 @@ func main() {
   )
 
   forever := make(chan bool)
+
+  read_from_redis()
 
   go func() {
     for d := range msgs {
